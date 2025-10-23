@@ -2,6 +2,7 @@ services:
   - type: web
     name: best-ges-comptes
     runtime: docker
+    plan: free
     envVars:
       - key: APP_NAME
         value: BestGesComptes

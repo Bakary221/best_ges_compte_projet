@@ -54,3 +54,4 @@ services:
     name: best-ges-comptes-db
     plan: free
     ipAllowList: []
+    # Database configuration for PostgreSQL

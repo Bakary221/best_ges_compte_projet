@@ -3,6 +3,8 @@ services:
     name: best-ges-comptes
     runtime: docker
     plan: free
+    buildCommand: "docker build -t best-ges-comptes ."
+    startCommand: "docker run -p $PORT:80 best-ges-comptes"
     envVars:
       - key: APP_NAME
         value: BestGesComptes
@@ -29,4 +31,6 @@ services:
 
 databases:
   - name: best-ges-comptes-db
+    databaseName: bestgescomptes
+    user: bestgescomptes_user
     plan: free

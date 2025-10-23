@@ -2,6 +2,65 @@
 
 Application Laravel pour la gestion des comptes bancaires avec système de clients et administrateurs.
 
+## 🚀 Déploiement sur Fly.io (entièrement gratuit)
+
+### Prérequis
+- Compte Fly.io (https://fly.io)
+- Fly CLI installé (`curl -L https://fly.io/install.sh | sh`)
+
+### Étapes de déploiement sur Fly.io
+
+#### 1. Installation et authentification
+```bash
+# Installer Fly CLI (si pas déjà fait)
+curl -L https://fly.io/install.sh | sh
+
+# Se connecter à Fly.io
+fly auth login
+```
+
+#### 2. Initialisation de l'application
+```bash
+# Créer l'application Fly.io
+fly launch --name best-ges-comptes --region cdg
+
+# Créer la base de données PostgreSQL
+fly postgres create --name bestgescomptes-db
+
+# Attacher la base de données à l'application
+fly postgres attach bestgescomptes-db --app best-ges-comptes
+```
+
+#### 3. Configuration des variables d'environnement
+```bash
+# Définir les secrets/variables d'environnement
+fly secrets set APP_NAME=BestGesComptes
+fly secrets set APP_ENV=production
+fly secrets set APP_DEBUG=false
+fly secrets set APP_KEY=$(php artisan key:generate --show)
+```
+
+#### 4. Déploiement
+```bash
+# Déployer l'application
+fly deploy
+
+# Vérifier le déploiement
+fly status
+fly logs
+```
+
+#### 5. Accès à l'application
+Votre application sera accessible à l'URL fournie par Fly.io (ex: `https://best-ges-comptes.fly.dev`)
+
+### Avantages de Fly.io
+- ✅ **Entièrement gratuit** pour les petits projets
+- ✅ Déploiement Docker natif
+- ✅ Base de données PostgreSQL gratuite
+- ✅ Scaling automatique
+- ✅ CDN intégré
+- ✅ Certificats SSL automatiques
+
 ## 🚂 Déploiement sur Railway (Recommandé - Plus simple)
 
 ### Prérequis

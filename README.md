@@ -2,50 +2,66 @@
 
 Application Laravel pour la gestion des comptes bancaires avec système de clients et administrateurs.
 
-## 🚀 Déploiement sur Render
+## 🚀 Déploiement sur Render (avec PostgreSQL)
 
 ### Prérequis
 - Compte Render (https://render.com)
 - Repository GitHub avec le code source
 
-### Étapes de déploiement
+### Étapes de déploiement (avec PostgreSQL managé)
 
 #### 1. Préparation du projet
 ```bash
 # Générer une clé d'application
 php artisan key:generate
 
-# Créer le fichier .env pour la production
-cp .env.example .env.production
-# Modifier les variables d'environnement pour la production
+# Le fichier .env sera configuré automatiquement sur Render
+# avec les variables d'environnement PostgreSQL
 ```
 
 #### 2. Configuration Render
 1. Connectez-vous à votre compte Render
-2. Cliquez sur "New +" et sélectionnez "Blueprint"
+2. Cliquez sur "New +" et sélectionnez "Web Service"
 3. Connectez votre repository GitHub
-4. Render détectera automatiquement le fichier `render.yaml`
+4. **Ajoutez d'abord une base de données PostgreSQL** :
+   - New → PostgreSQL
+   - Nommez-la (ex: `bestgescomptes-db`)
+   - Notez les credentials générés automatiquement
+5. **Créez le Web Service** :
+   - **Runtime** : PHP
+   - **Build Command** : `composer install --optimize-autoloader --no-dev && npm install && npm run build`
+   - **Start Command** : `php artisan serve --host=0.0.0.0 --port=$PORT`
 
-#### 3. Configuration de la base de données
-Render créera automatiquement une base de données PostgreSQL. Les variables d'environnement seront automatiquement configurées via le fichier `render.yaml`.
+#### 3. Variables d'environnement
+Dans l'onglet "Environment", ajoutez ces variables :
+```
+APP_NAME=BestGesComptes
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=votre_clé_générée_avec_php_artisan_key:generate
+DB_CONNECTION=postgresql
+DB_HOST=/var/run/render/postgresql
+DB_PORT=5432
+DB_DATABASE=bestgescomptes
+DB_USERNAME=bestgescomptes_user
+DB_PASSWORD=votre_mot_de_passe_postgresql
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+```
 
-#### 4. Variables d'environnement à configurer manuellement (si nécessaire)
-Dans le dashboard Render, allez dans Environment et ajoutez :
-- `APP_KEY` : La clé générée avec `php artisan key:generate`
-- `APP_ENV=production`
-- `APP_DEBUG=false`
+#### 4. Déploiement
+1. Cliquez sur "Create Web Service"
+2. Render construira et déploiera automatiquement votre application
+3. Les migrations et seeders seront exécutés automatiquement lors du premier déploiement
+4. Attendez que le déploiement soit terminé (environ 5-10 minutes)
 
-#### 5. Déploiement
-1. Cliquez sur "Create Blueprint"
-2. Render construira et déploiera automatiquement :
-   - L'application web
-   - La base de données PostgreSQL
-3. Attendez que le déploiement soit terminé (environ 5-10 minutes)
+#### 5. Vérification
+Votre application sera accessible à l'URL fournie par Render (ex: `https://best-ges-comptes.onrender.com`)
 
-#### 6. Migration et seeding de la base de données
-Après le premier déploiement, exécutez les migrations :
+#### 6. Migration manuelle (si nécessaire)
+Si les migrations n'ont pas été exécutées automatiquement, vous pouvez les lancer via le Shell Render :
 ```bash
-# Via SSH dans le conteneur Render ou via le dashboard
 php artisan migrate --force
 php artisan db:seed --force
 ```

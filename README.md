@@ -2,62 +2,85 @@
 
 Application Laravel pour la gestion des comptes bancaires avec système de clients et administrateurs.
 
-## 🚂 Déploiement sur Railway (Recommandé - Plus simple)
+## 🚀 Déploiement gratuit sur Render (avec Docker et PostgreSQL)
 
 ### Prérequis
-- Compte Railway (https://railway.app)
+- Compte Render gratuit (https://render.com)
 - Repository GitHub avec le code source
 
-### Étapes de déploiement
+### Étapes de déploiement gratuit
 
 #### 1. Préparation du projet
-Le projet est déjà configuré avec un fichier `railway.json` pour un déploiement automatisé.
+Le projet est déjà configuré avec Docker pour un déploiement facile et gratuit.
 
-#### 2. Configuration Railway
-1. Connectez-vous à votre compte Railway
-2. Cliquez sur "New Project"
-3. Sélectionnez "Deploy from GitHub repo"
-4. Connectez votre repository GitHub
-5. Railway détectera automatiquement la configuration
+#### 2. Configuration Render
+1. Connectez-vous à votre compte Render gratuit
+2. **Créez d'abord la base de données PostgreSQL gratuite** :
+   - Cliquez sur "New +" → "PostgreSQL"
+   - Nommez-la (ex: `bestgescomptes-db`)
+   - **Choisissez le plan gratuit** (0$ par mois)
+   - Notez les credentials générés automatiquement
+3. **Créez le Web Service gratuit** :
+   - Cliquez sur "New +" → "Web Service"
+   - Connectez votre repository GitHub
+   - **Runtime** : Docker
+   - **Region** : Choisissez une région proche (ex: Frankfurt)
+   - **Instance Type** : Free (750 heures/mois gratuites)
 
-#### 3. Ajout de la base de données
-1. Dans votre projet Railway, cliquez sur "Add Plugin"
-2. Sélectionnez "PostgreSQL"
-3. Railway créera automatiquement une base de données PostgreSQL
+#### 3. Configuration du service
+- **Build Command** : `docker build -t best-ges-comptes .`
+- **Start Command** : `docker run -p $PORT:80 best-ges-comptes`
 
 #### 4. Variables d'environnement
-Dans les variables d'environnement de votre projet Railway, ajoutez :
+Dans l'onglet "Environment" du Web Service, ajoutez ces variables :
 ```
 APP_NAME=BestGesComptes
 APP_ENV=production
 APP_DEBUG=false
-APP_KEY=base64:votre-cle-generee
-DB_CONNECTION=postgresql
-DB_HOST=${{Postgres.PGHOST}}
-DB_PORT=${{Postgres.PGPORT}}
-DB_DATABASE=${{Postgres.PGDATABASE}}
-DB_USERNAME=${{Postgres.PGUSER}}
-DB_PASSWORD=${{Postgres.PGPASSWORD}}
+APP_URL=https://your-app-name.onrender.com
+DB_CONNECTION=pgsql
+DB_HOST=votre-host-postgresql
+DB_PORT=5432
+DB_DATABASE=votre-database-name
+DB_USERNAME=votre-username
+DB_PASSWORD=votre-password
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 ```
 
-#### 5. Déploiement
-1. Cliquez sur "Deploy"
-2. Railway construira et déploiera automatiquement votre application
-3. Les migrations seront exécutées automatiquement lors du premier déploiement
+*Remplacez les valeurs DB_* par celles fournies par votre base PostgreSQL Render gratuite*
 
-#### 6. Migration manuelle (si nécessaire)
-Si les migrations n'ont pas été exécutées automatiquement :
+#### 5. Déploiement automatique
+1. Cliquez sur "Create Web Service"
+2. Render construira automatiquement votre image Docker
+3. Le déploiement se lance automatiquement
+4. Attendez que le déploiement soit terminé (environ 5-10 minutes)
+
+#### 6. Migration de la base de données
+Une fois déployé, exécutez les migrations via le Shell Render :
 ```bash
-# Via le terminal Railway ou après déploiement
+# Dans le Shell de votre Web Service (onglet Shell)
 php artisan migrate --force
 php artisan db:seed --force
+php artisan key:generate
 ```
 
 #### 7. Vérification
-Votre application sera accessible à l'URL fournie par Railway (ex: `https://best-ges-comptes.up.railway.app`)
+Votre application sera accessible gratuitement à l'URL fournie par Render (ex: `https://best-ges-comptes.onrender.com`)
+
+### 💡 Avantages du déploiement gratuit
+- **750 heures gratuites par mois** pour le Web Service
+- **Base PostgreSQL gratuite** (avec limitations de stockage)
+- **Déploiement automatique** depuis GitHub
+- **SSL automatique** inclus
+- **Pas de carte de crédit requise** pour commencer
+
+### ⚠️ Limitations du plan gratuit
+- Application en sommeil après 15 minutes d'inactivité
+- 750 heures/mois pour le Web Service
+- Stockage limité pour PostgreSQL
+- Pour une utilisation en production continue, upgrade vers un plan payant sera nécessaire
 
 ## 🐳 Développement local avec Docker
 
@@ -210,7 +233,6 @@ best-ges-comptes/
 ├── tests/
 ├── Dockerfile
 ├── docker-compose.yml
-├── railway.json
 ├── render.yaml
 ├── composer.json
 ├── package.json

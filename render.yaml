@@ -2,6 +2,7 @@ services:
   - type: web
     name: best-ges-comptes
     runtime: docker
+    plan: free
     buildCommand: "docker build -t best-ges-comptes ."
     startCommand: "docker run -p $PORT:80 best-ges-comptes"
     envVars:
@@ -51,4 +52,5 @@ services:
 
   - type: pgsql
     name: best-ges-comptes-db
+    plan: free
     ipAllowList: []

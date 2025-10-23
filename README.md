@@ -38,7 +38,7 @@ Dans l'onglet "Environment", ajoutez ces variables :
 APP_NAME=BestGesComptes
 APP_ENV=production
 APP_DEBUG=false
-APP_KEY=votre_clé_générée_avec_php_artisan_key:generate
+APP_KEY=base64:T1zRTyvj4S8VP9rHiGGmAHjS+XiFDxWv74BRCdSHk0g=
 DB_CONNECTION=postgresql
 DB_HOST=/var/run/render/postgresql
 DB_PORT=5432

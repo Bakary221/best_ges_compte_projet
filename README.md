@@ -2,229 +2,69 @@
 
 Application Laravel pour la gestion des comptes bancaires avec système de clients et administrateurs.
 
-## 🚀 Déploiement sur Fly.io (entièrement gratuit)
+## 🚀 Installation et configuration locale
 
 ### Prérequis
-- Compte Fly.io (https://fly.io)
-- Fly CLI installé (`curl -L https://fly.io/install.sh | sh`)
+- PHP 8.2 ou supérieur
+- Composer
+- PostgreSQL
+- Node.js & NPM (pour les assets frontend)
 
-### Étapes de déploiement sur Fly.io
-
-#### 1. Installation et authentification
+### Installation
 ```bash
-# Installer Fly CLI (si pas déjà fait)
-curl -L https://fly.io/install.sh | sh
+# Cloner le repository
+git clone https://github.com/votre-username/best-ges-comptes.git
+cd best-ges-comptes
 
-# Se connecter à Fly.io
-fly auth login
-```
+# Installer les dépendances PHP
+composer install
 
-#### 2. Initialisation de l'application
-```bash
-# Créer l'application Fly.io
-fly launch --name best-ges-comptes --region cdg
+# Installer les dépendances Node.js
+npm install
 
-# Créer la base de données PostgreSQL
-fly postgres create --name bestgescomptes-db
-
-# Attacher la base de données à l'application
-fly postgres attach bestgescomptes-db --app best-ges-comptes
-```
-
-#### 3. Configuration des variables d'environnement
-```bash
-# Définir les secrets/variables d'environnement
-fly secrets set APP_NAME=BestGesComptes
-fly secrets set APP_ENV=production
-fly secrets set APP_DEBUG=false
-fly secrets set APP_KEY=$(php artisan key:generate --show)
-```
-
-#### 4. Déploiement
-```bash
-# Déployer l'application
-fly deploy
-
-# Vérifier le déploiement
-fly status
-fly logs
-```
-
-#### 5. Accès à l'application
-Votre application sera accessible à l'URL fournie par Fly.io (ex: `https://best-ges-comptes.fly.dev`)
-
-### Avantages de Fly.io
-- ✅ **Entièrement gratuit** pour les petits projets
-- ✅ Déploiement Docker natif
-- ✅ Base de données PostgreSQL gratuite
-- ✅ Scaling automatique
-- ✅ CDN intégré
-- ✅ Certificats SSL automatiques
-
-## 🚂 Déploiement sur Railway (Recommandé - Plus simple)
-
-### Prérequis
-- Compte Railway (https://railway.app)
-- Repository GitHub avec le code source
-
-### Étapes de déploiement
-
-#### 1. Préparation du projet
-Le projet est déjà configuré avec un fichier `railway.json` pour un déploiement automatisé.
-
-#### 2. Configuration Railway
-1. Connectez-vous à votre compte Railway
-2. Cliquez sur "New Project"
-3. Sélectionnez "Deploy from GitHub repo"
-4. Connectez votre repository GitHub
-5. Railway détectera automatiquement la configuration
-
-#### 3. Ajout de la base de données
-1. Dans votre projet Railway, cliquez sur "Add Plugin"
-2. Sélectionnez "PostgreSQL"
-3. Railway créera automatiquement une base de données PostgreSQL
-
-#### 4. Variables d'environnement
-Dans les variables d'environnement de votre projet Railway, ajoutez :
-```
-APP_NAME=BestGesComptes
-APP_ENV=production
-APP_DEBUG=false
-APP_KEY=base64:votre-cle-generee
-DB_CONNECTION=postgresql
-DB_HOST=${{Postgres.PGHOST}}
-DB_PORT=${{Postgres.PGPORT}}
-DB_DATABASE=${{Postgres.PGDATABASE}}
-DB_USERNAME=${{Postgres.PGUSER}}
-DB_PASSWORD=${{Postgres.PGPASSWORD}}
-CACHE_DRIVER=file
-QUEUE_CONNECTION=sync
-SESSION_DRIVER=file
-```
-
-#### 5. Déploiement
-1. Cliquez sur "Deploy"
-2. Railway construira et déploiera automatiquement votre application
-3. Les migrations seront exécutées automatiquement lors du premier déploiement
-
-#### 6. Migration manuelle (si nécessaire)
-Si les migrations n'ont pas été exécutées automatiquement :
-```bash
-# Via le terminal Railway ou après déploiement
-php artisan migrate --force
-php artisan db:seed --force
-```
-
-#### 7. Vérification
-Votre application sera accessible à l'URL fournie par Railway (ex: `https://best-ges-comptes.up.railway.app`)
-
-## 🐳 Développement local avec Docker
-
-### Prérequis
-- Docker
-- Docker Compose
-
-### Démarrage
-```bash
 # Copier le fichier d'environnement
 cp .env.example .env
 
-# Construire et démarrer les conteneurs
-docker-compose up --build -d
-
-# Attendre que les conteneurs soient prêts
-sleep 10
-
-# Exécuter les migrations et seeders
-docker-compose exec app php artisan migrate --force
-docker-compose exec app php artisan db:seed --force
-
-# Générer la clé d'application si nécessaire
-docker-compose exec app php artisan key:generate
-
-# Vérifier que les conteneurs sont en cours d'exécution
-docker-compose ps
+# Générer la clé d'application
+php artisan key:generate
 ```
 
-### Accès à l'application
-- Application : http://localhost:8000
-- Base de données : localhost:5432 (user: laravel, password: secret)
+### Configuration de la base de données
+1. Créer une base de données PostgreSQL
+2. Modifier le fichier `.env` avec vos informations de base de données :
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=bestgescomptes
+DB_USERNAME=votre_username
+DB_PASSWORD=votre_password
+```
 
-### Commandes utiles
+### Migration et seeding
 ```bash
-# Arrêter les conteneurs
-docker-compose down
+# Exécuter les migrations
+php artisan migrate
 
-# Voir les logs
-docker-compose logs -f
-
-# Accéder au conteneur de l'application
-docker-compose exec app bash
-
-# Accéder au conteneur de la base de données
-docker-compose exec db psql -U laravel -d laravel
-
-# Exécuter des commandes Artisan
-docker-compose exec app php artisan migrate
-docker-compose exec app php artisan db:seed
-
-# Reconstruire les conteneurs après modification du code
-docker-compose up --build --force-recreate -d
+# Peupler la base de données avec des données de test
+php artisan db:seed
 ```
 
-## 🐳 Développement local avec Docker
-
-### Prérequis
-- Docker
-- Docker Compose
-
-### Démarrage
+### Compiler les assets
 ```bash
-# Copier le fichier d'environnement
-cp .env.example .env
+# Pour le développement
+npm run dev
 
-# Construire et démarrer les conteneurs
-docker-compose up --build -d
-
-# Attendre que les conteneurs soient prêts
-sleep 10
-
-# Exécuter les migrations et seeders
-docker-compose exec app php artisan migrate --force
-docker-compose exec app php artisan db:seed --force
-
-# Générer la clé d'application si nécessaire
-docker-compose exec app php artisan key:generate
-
-# Vérifier que les conteneurs sont en cours d'exécution
-docker-compose ps
+# Pour la production
+npm run build
 ```
 
-### Accès à l'application
-- Application : http://localhost:8000
-- Base de données : localhost:5432 (user: laravel, password: secret)
-
-### Commandes utiles
+### Démarrer le serveur
 ```bash
-# Arrêter les conteneurs
-docker-compose down
-
-# Voir les logs
-docker-compose logs -f
-
-# Accéder au conteneur de l'application
-docker-compose exec app bash
-
-# Accéder au conteneur de la base de données
-docker-compose exec db psql -U laravel -d laravel
-
-# Exécuter des commandes Artisan
-docker-compose exec app php artisan migrate
-docker-compose exec app php artisan db:seed
-
-# Reconstruire les conteneurs après modification du code
-docker-compose up --build --force-recreate -d
+php artisan serve
 ```
+
+L'application sera accessible sur `http://localhost:8000`
 
 ## 📊 Fonctionnalités
 
@@ -239,41 +79,45 @@ docker-compose up --build --force-recreate -d
 
 ## 🛠️ Technologies utilisées
 
-- **Laravel 11** - Framework PHP
-- **PostgreSQL** - Base de données
-- **Docker** - Conteneurisation
-- **Render** - Plateforme de déploiement
+- **Laravel 12** - Framework PHP moderne
+- **PHP 8.2** - Version LTS avec performances optimisées
+- **PostgreSQL** - Base de données robuste
 - **Composer** - Gestionnaire de dépendances PHP
-- **NPM** - Gestionnaire de dépendances JavaScript
+- **NPM & Vite** - Build d'assets frontend
+- **TailwindCSS** - Framework CSS utilitaire
+- **Laravel Swagger (l5-swagger)** - Documentation API automatique
 
 ## 📁 Structure du projet
 
 ```
 best-ges-comptes/
 ├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── CompteController.php
+│   │   │   └── Controller.php
 │   ├── Models/
-│   │   ├── User.php
-│   │   ├── Client.php
-│   │   ├── Admin.php
-│   │   ├── CompteBancaire.php
-│   │   └── Transaction.php
-│   └── Http/Controllers/
+│   │   ├── User.php          # Modèle utilisateur avec UUID
+│   │   ├── Client.php        # Modèle client
+│   │   ├── Admin.php         # Modèle administrateur
+│   │   ├── CompteBancaire.php # Modèle compte bancaire
+│   │   └── Transaction.php   # Modèle transaction
+│   └── Providers/
 ├── database/
-│   ├── migrations/
-│   ├── factories/
-│   └── seeders/
-├── public/
-├── resources/
+│   ├── factories/            # Factories pour les tests
+│   ├── migrations/           # Migrations base de données
+│   └── seeders/              # Seeders pour données de test
+├── public/                   # Assets publics
+├── resources/                # Views et assets frontend
 ├── routes/
-├── storage/
-├── tests/
-├── Dockerfile
-├── docker-compose.yml
-├── railway.json
-├── render.yaml
-├── composer.json
-├── package.json
-└── README.md
+│   ├── api.php              # Routes API
+│   ├── web.php              # Routes web
+│   └── console.php          # Routes console
+├── storage/                  # Fichiers temporaires Laravel
+├── tests/                    # Tests unitaires et fonctionnels
+├── composer.json            # Dépendances PHP
+├── package.json             # Dépendances Node.js
+└── README.md               # Documentation
 ```
 
 ## 🔧 Configuration

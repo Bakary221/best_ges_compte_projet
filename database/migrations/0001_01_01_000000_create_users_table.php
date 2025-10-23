@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('nom');
             $table->string('login')->unique();
             $table->string('email')->unique();
-            $table->enum('type_user', ['admin' , 'client'])->default('admin');
             $table->enum('statut' , ['actif' , 'inactif']);
             $table->string('cni');
+            $table->string('code');
+            $table->string('telephone');
             $table->string('adresse');
             $table->string('password');
             

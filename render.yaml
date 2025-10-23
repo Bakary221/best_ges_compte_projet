@@ -2,8 +2,6 @@ services:
   - type: web
     name: best-ges-comptes
     runtime: docker
-    buildCommand: "docker build -t best-ges-comptes ."
-    startCommand: "docker run -p $PORT:80 best-ges-comptes"
     envVars:
       - key: APP_NAME
         value: BestGesComptes
@@ -17,31 +15,9 @@ services:
         generateValue: true
       - key: DB_CONNECTION
         value: pgsql
-      - key: DB_HOST
-        fromService:
-          type: postgresql
+      - key: DATABASE_URL
+        fromDatabase:
           name: best-ges-comptes-db
-          property: host
-      - key: DB_PORT
-        fromService:
-          type: postgresql
-          name: best-ges-comptes-db
-          property: port
-      - key: DB_DATABASE
-        fromService:
-          type: postgresql
-          name: best-ges-comptes-db
-          property: database
-      - key: DB_USERNAME
-        fromService:
-          type: postgresql
-          name: best-ges-comptes-db
-          property: user
-      - key: DB_PASSWORD
-        fromService:
-          type: postgresql
-          name: best-ges-comptes-db
-          property: password
       - key: CACHE_DRIVER
         value: file
       - key: QUEUE_CONNECTION

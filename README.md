@@ -2,69 +2,62 @@
 
 Application Laravel pour la gestion des comptes bancaires avec système de clients et administrateurs.
 
-## 🚀 Déploiement sur Render (avec PostgreSQL)
+## 🚂 Déploiement sur Railway (Recommandé - Plus simple)
 
 ### Prérequis
-- Compte Render (https://render.com)
+- Compte Railway (https://railway.app)
 - Repository GitHub avec le code source
 
-### Étapes de déploiement (avec PostgreSQL managé)
+### Étapes de déploiement
 
 #### 1. Préparation du projet
-```bash
-# Générer une clé d'application
-php artisan key:generate
+Le projet est déjà configuré avec un fichier `railway.json` pour un déploiement automatisé.
 
-# Le fichier .env sera configuré automatiquement sur Render
-# avec les variables d'environnement PostgreSQL
-```
+#### 2. Configuration Railway
+1. Connectez-vous à votre compte Railway
+2. Cliquez sur "New Project"
+3. Sélectionnez "Deploy from GitHub repo"
+4. Connectez votre repository GitHub
+5. Railway détectera automatiquement la configuration
 
-#### 2. Configuration Render
-1. Connectez-vous à votre compte Render
-2. Cliquez sur "New +" et sélectionnez "Web Service"
-3. Connectez votre repository GitHub
-4. **Ajoutez d'abord une base de données PostgreSQL** :
-   - New → PostgreSQL
-   - Nommez-la (ex: `bestgescomptes-db`)
-   - Notez les credentials générés automatiquement
-5. **Créez le Web Service** :
-   - **Runtime** : PHP
-   - **Build Command** : `composer install --optimize-autoloader --no-dev && npm install && npm run build`
-   - **Start Command** : `php artisan serve --host=0.0.0.0 --port=$PORT`
+#### 3. Ajout de la base de données
+1. Dans votre projet Railway, cliquez sur "Add Plugin"
+2. Sélectionnez "PostgreSQL"
+3. Railway créera automatiquement une base de données PostgreSQL
 
-#### 3. Variables d'environnement
-Dans l'onglet "Environment", ajoutez ces variables :
+#### 4. Variables d'environnement
+Dans les variables d'environnement de votre projet Railway, ajoutez :
 ```
 APP_NAME=BestGesComptes
 APP_ENV=production
 APP_DEBUG=false
-APP_KEY=base64:T1zRTyvj4S8VP9rHiGGmAHjS+XiFDxWv74BRCdSHk0g=
+APP_KEY=base64:votre-cle-generee
 DB_CONNECTION=postgresql
-DB_HOST=/var/run/render/postgresql
-DB_PORT=5432
-DB_DATABASE=bestgescomptes
-DB_USERNAME=bestgescomptes_user
-DB_PASSWORD=votre_mot_de_passe_postgresql
+DB_HOST=${{Postgres.PGHOST}}
+DB_PORT=${{Postgres.PGPORT}}
+DB_DATABASE=${{Postgres.PGDATABASE}}
+DB_USERNAME=${{Postgres.PGUSER}}
+DB_PASSWORD=${{Postgres.PGPASSWORD}}
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 ```
 
-#### 4. Déploiement
-1. Cliquez sur "Create Web Service"
-2. Render construira et déploiera automatiquement votre application
-3. Les migrations et seeders seront exécutés automatiquement lors du premier déploiement
-4. Attendez que le déploiement soit terminé (environ 5-10 minutes)
-
-#### 5. Vérification
-Votre application sera accessible à l'URL fournie par Render (ex: `https://best-ges-comptes.onrender.com`)
+#### 5. Déploiement
+1. Cliquez sur "Deploy"
+2. Railway construira et déploiera automatiquement votre application
+3. Les migrations seront exécutées automatiquement lors du premier déploiement
 
 #### 6. Migration manuelle (si nécessaire)
-Si les migrations n'ont pas été exécutées automatiquement, vous pouvez les lancer via le Shell Render :
+Si les migrations n'ont pas été exécutées automatiquement :
 ```bash
+# Via le terminal Railway ou après déploiement
 php artisan migrate --force
 php artisan db:seed --force
 ```
+
+#### 7. Vérification
+Votre application sera accessible à l'URL fournie par Railway (ex: `https://best-ges-comptes.up.railway.app`)
 
 ## 🐳 Développement local avec Docker
 
@@ -79,6 +72,16 @@ cp .env.example .env
 
 # Construire et démarrer les conteneurs
 docker-compose up --build -d
+
+# Attendre que les conteneurs soient prêts
+sleep 10
+
+# Exécuter les migrations et seeders
+docker-compose exec app php artisan migrate --force
+docker-compose exec app php artisan db:seed --force
+
+# Générer la clé d'application si nécessaire
+docker-compose exec app php artisan key:generate
 
 # Vérifier que les conteneurs sont en cours d'exécution
 docker-compose ps
@@ -101,6 +104,67 @@ docker-compose exec app bash
 
 # Accéder au conteneur de la base de données
 docker-compose exec db psql -U laravel -d laravel
+
+# Exécuter des commandes Artisan
+docker-compose exec app php artisan migrate
+docker-compose exec app php artisan db:seed
+
+# Reconstruire les conteneurs après modification du code
+docker-compose up --build --force-recreate -d
+```
+
+## 🐳 Développement local avec Docker
+
+### Prérequis
+- Docker
+- Docker Compose
+
+### Démarrage
+```bash
+# Copier le fichier d'environnement
+cp .env.example .env
+
+# Construire et démarrer les conteneurs
+docker-compose up --build -d
+
+# Attendre que les conteneurs soient prêts
+sleep 10
+
+# Exécuter les migrations et seeders
+docker-compose exec app php artisan migrate --force
+docker-compose exec app php artisan db:seed --force
+
+# Générer la clé d'application si nécessaire
+docker-compose exec app php artisan key:generate
+
+# Vérifier que les conteneurs sont en cours d'exécution
+docker-compose ps
+```
+
+### Accès à l'application
+- Application : http://localhost:8000
+- Base de données : localhost:5432 (user: laravel, password: secret)
+
+### Commandes utiles
+```bash
+# Arrêter les conteneurs
+docker-compose down
+
+# Voir les logs
+docker-compose logs -f
+
+# Accéder au conteneur de l'application
+docker-compose exec app bash
+
+# Accéder au conteneur de la base de données
+docker-compose exec db psql -U laravel -d laravel
+
+# Exécuter des commandes Artisan
+docker-compose exec app php artisan migrate
+docker-compose exec app php artisan db:seed
+
+# Reconstruire les conteneurs après modification du code
+docker-compose up --build --force-recreate -d
 ```
 
 ## 📊 Fonctionnalités
@@ -139,9 +203,17 @@ best-ges-comptes/
 │   ├── migrations/
 │   ├── factories/
 │   └── seeders/
+├── public/
+├── resources/
+├── routes/
+├── storage/
+├── tests/
 ├── Dockerfile
 ├── docker-compose.yml
+├── railway.json
 ├── render.yaml
+├── composer.json
+├── package.json
 └── README.md
 ```
 
